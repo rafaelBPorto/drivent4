@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -102,3 +103,11 @@ dist
 
 # TernJS port file
 .tern-port
+=======
+dist
+node_modules
+.env*
+!.env.example
+yarn.lock
+.vscode
+>>>>>>> 3d3368aea83aaf592faf53be06ff8159b85eccde
