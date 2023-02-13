@@ -12,15 +12,33 @@ export async function bookingPost(req: AuthenticatedRequest, res: Response) {
         const booking = await bookingService.bookingPost(userId, roomId)
         res.status(httpStatus.OK).send(booking)
     } catch (error) {
-        switch (error.name){
+        switch (error.name) {
             case "NotFoundError":
                 return res.sendStatus(httpStatus.NOT_FOUND);
             case "ForbiddenError":
                 return res.sendStatus(httpStatus.FORBIDDEN);
             case "ConflictError":
-                return res.sendStatus(httpStatus.CONFLICT);       
+                return res.sendStatus(httpStatus.CONFLICT);
             default:
                 return res.sendStatus(500);
         }
     }
+}
+
+export async function getBooking(req: AuthenticatedRequest, res: Response) {
+    const { userId } = req;
+
+    try {
+        const booking = await bookingService.findBooking(userId)
+        console.log(booking)
+        res.status(httpStatus.OK).send(booking)
+    } catch (error) {
+        switch (error.name) {
+            case "NotFoundError":
+                return res.sendStatus(httpStatus.NOT_FOUND);
+            default:
+                return res.sendStatus(500);
+        }
+    }
+
 }

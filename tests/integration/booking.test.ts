@@ -1,5 +1,6 @@
 import app, { init } from "@/app";
 import httpStatus from "http-status";
+import { any, number } from "joi";
 import supertest from "supertest";
 import {createPayment, createTicket, createTicketType, createTicketTypeRemote, createTicketTypeWithHotel, initRoom } from "../factories";
 import { cleanDb } from "../helpers";
@@ -101,3 +102,45 @@ describe("POST /booking", () => {
         expect(response.status).toBe(httpStatus.CONFLICT)
     });
 });
+
+describe("GET /booking", ()=>{
+    it("should respond with status 200 if find booking", async()=>{
+        const {user, token, enrollment, room} = await initRoom()
+        //criar pagemento
+        const ticketType = await createTicketTypeWithHotel()
+        const ticket = await createTicket(enrollment.id, ticketType.id, "PAID")
+        
+        await createPayment(ticket.id, ticketType.price)
+        
+        //buscar reserva
+        await server.post("/booking").set("Authorization", `Bearer ${token}`).send({ roomId: room.id });
+        const response = await server.get("/booking").set("Authorization", `Bearer ${token}`)
+        expect(response.status).toBe(200)
+        expect(response.body).toEqual([
+            {
+                id: expect.any(Number),
+                Room:{
+                    id: expect.any(Number),
+                    name: expect.any(String),
+                    capacity: expect.any(Number),
+                    hotelId: expect.any(Number),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String)
+                }
+            }
+        ])
+    })
+
+    it("should respond with status 404 if don't find booking", async()=>{
+        const {user, token, enrollment, room} = await initRoom()
+        //criar pagemento
+        const ticketType = await createTicketTypeWithHotel()
+        const ticket = await createTicket(enrollment.id, ticketType.id, "PAID")
+        
+        await createPayment(ticket.id, ticketType.price)
+        
+        //buscar reserva
+        const response = await server.get("/booking").set("Authorization", `Bearer ${token}`)
+        expect(response.status).toBe(httpStatus.NOT_FOUND)
+    })
+})

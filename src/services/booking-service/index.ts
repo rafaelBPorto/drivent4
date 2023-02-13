@@ -31,7 +31,13 @@ async function bookingPost(userId: number, roomId: number) {
 }
 
 
-
+async function findBooking(userId: number) {
+    const booking = await bookingRepository.findAllBookingsByUserId(userId)
+    if(booking.length===0)
+        throw notFoundError();
+    return booking
+}   
 export const bookingService = {
     bookingPost,
+    findBooking
 }

@@ -1,3 +1,4 @@
+import { prisma } from "@/config";
 import { generateValidToken } from "../helpers";
 import { createEnrollmentWithAddress } from "./enrollments-factory";
 import { createHotel, createRoomWithHotelId } from "./hotels-factory";
@@ -13,5 +14,5 @@ export async function initRoom(capacity? : number ){
         const hotel = await createHotel();
         const room = capacity === 0 ? await createRoomWithHotelId(hotel.id, capacity) : await createRoomWithHotelId(hotel.id)
 
-        return {token, enrollment, room}
+        return {user, token, enrollment, room}
 }

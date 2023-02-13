@@ -19,7 +19,23 @@ async function createBooking(userId:number, roomId: number) {
     return {bookingId: booking.id}
     
 }
+
+async function findAllBookingsByUserId(userId:number) {
+    return await prisma.booking.findMany({
+        where:{
+            userId
+        },
+        select:{
+            id: true,
+            Room: true
+        }
+        
+ 
+    });
+
+};
 export const bookingRepository = {
     findBookingByUserId,
+    findAllBookingsByUserId,
     createBooking
 }
