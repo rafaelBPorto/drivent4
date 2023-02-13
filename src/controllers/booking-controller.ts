@@ -43,17 +43,19 @@ export async function getBooking(req: AuthenticatedRequest, res: Response) {
 
 }
 
-export async function putBooking(req: AuthenticatedRequest, res: Response){
+export async function putBooking(req: AuthenticatedRequest, res: Response) {
     const { roomId } = req.body
     const bookingId = Number(req.params.bookingId)
 
     try {
         const booking = await bookingService.bookingPut(roomId, bookingId)
-        return res.send({bookingId: booking.id});
-    }catch (error) {
+        return res.send({ bookingId: booking.id });
+    } catch (error) {
         switch (error.name) {
             case "NotFoundError":
                 return res.sendStatus(httpStatus.NOT_FOUND);
+            case "ForbiddenError":
+                return res.sendStatus(httpStatus.FORBIDDEN);
             default:
                 return res.sendStatus(500);
         }
