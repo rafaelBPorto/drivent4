@@ -22,10 +22,10 @@ async function bookingPost(userId: number, roomId: number) {
     //Testar se já existe reserva para este usuário
     const isBooking = await bookingRepository.findBookingByUserId(userId)
     if (isBooking)
-        throw  conflictError("user already has room reservation");
+        throw conflictError("user already has room reservation");
 
     //Se tiver passados em todas as regras, criar uma reserva para usuário
-    const booking = bookingRepository.createBooking(userId, roomId)
+    const booking = await bookingRepository.createBooking(userId, roomId)
     if (!booking)
         throw notFoundError();
 
