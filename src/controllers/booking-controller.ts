@@ -46,9 +46,6 @@ export async function getBooking(req: AuthenticatedRequest, res: Response) {
 export async function putBooking(req: AuthenticatedRequest, res: Response){
     const { roomId } = req.body
     const bookingId = Number(req.params.bookingId)
-    
-    console.log(roomId)
-    console.log(bookingId)
 
     try {
         const booking = await bookingService.bookingPut(roomId, bookingId)

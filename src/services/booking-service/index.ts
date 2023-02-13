@@ -36,13 +36,15 @@ async function bookingPut(roomId: number, bookingId: number) {
     const booking = await bookingRepository.findBookingById(bookingId)
     if (!booking)
         throw forbiddenError();
-        console.log("booking")
+   
     const room = await roomRespository.findRoomById(roomId)
+
     if (!room)
         throw notFoundError();
 
-    if (room.Booking.length >= room.capacity)
+    if (room.Booking.length >= room.capacity){
         throw forbiddenError();
+    }
 
     const newRoom = await bookingRepository.updateBookingByRoomId(bookingId, roomId)
     

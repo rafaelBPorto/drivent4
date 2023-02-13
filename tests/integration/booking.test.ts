@@ -155,13 +155,13 @@ describe("PUT /booking/:bookingId", () => {
         const ticket = await createTicket(enrollment.id, ticketType.id, "PAID")
         await createPayment(ticket.id, ticketType.price)
         const booking = await server.post("/booking").set("Authorization", `Bearer ${token}`).send({ roomId: room.id });
-        const {bookingId} = booking.body
+        const { bookingId } = booking.body
         const response = await server.put(`/booking/${bookingId}`).set("Authorization", `Bearer ${token}`).send({ roomId: otherRoom.id });
         expect(response.status).toBe(200);
         expect(response.body.bookingId).toEqual(bookingId)
     })
 
-    it("should respond with status 200 if the booking update and bookingId", async () => {
+    it("should respond with status 404 if roomId don't exist", async () => {
         const { token, enrollment, room } = await initRoom()
         const otherRoom = await createRoomWithHotelId(room.hotelId)
 
@@ -170,10 +170,23 @@ describe("PUT /booking/:bookingId", () => {
         const ticket = await createTicket(enrollment.id, ticketType.id, "PAID")
         await createPayment(ticket.id, ticketType.price)
         const booking = await server.post("/booking").set("Authorization", `Bearer ${token}`).send({ roomId: room.id });
-        const {bookingId} = booking.body
+        const { bookingId } = booking.body
+        const response = await server.put(`/booking/${bookingId}`).set("Authorization", `Bearer ${token}`).send({ roomId: (otherRoom.id + 1000) });
+        expect(response.status).toBe(404);
+    })
+
+    it("should respond with status 500 if roomId don't exist", async () => {
+        const { token, enrollment, room } = await initRoom()
+        const otherRoom = await createRoomWithHotelId(room.hotelId, 0)
+
+        //criar booking
+        const ticketType = await createTicketTypeWithHotel()
+        const ticket = await createTicket(enrollment.id, ticketType.id, "PAID")
+        await createPayment(ticket.id, ticketType.price)
+        const booking = await server.post("/booking").set("Authorization", `Bearer ${token}`).send({ roomId: room.id });
+        const { bookingId } = booking.body
         const response = await server.put(`/booking/${bookingId}`).set("Authorization", `Bearer ${token}`).send({ roomId: otherRoom.id });
-        expect(response.status).toBe(200);
-        expect(response.body.bookingId).toEqual(bookingId)
+        expect(response.status).toBe(500);
     })
 
 
