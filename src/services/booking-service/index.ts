@@ -26,8 +26,6 @@ async function bookingPost(userId: number, roomId: number) {
 
     //Se tiver passados em todas as regras, criar uma reserva para usuário
     const booking = await bookingRepository.createBooking(userId, roomId)
-    if (!booking)
-        throw notFoundError();
 
     return booking;
 }
