@@ -1,6 +1,7 @@
 import { AuthenticatedRequest } from "@/middlewares";
 import { InputBooking } from "@/protocols";
 import { bookingService } from "@/services/booking-service";
+import { Booking } from "@prisma/client";
 import { Response } from "express";
 import httpStatus from "http-status";
 
@@ -30,9 +31,29 @@ export async function getBooking(req: AuthenticatedRequest, res: Response) {
 
     try {
         const booking = await bookingService.findBooking(userId)
-        console.log(booking)
         res.status(httpStatus.OK).send(booking)
     } catch (error) {
+        switch (error.name) {
+            case "NotFoundError":
+                return res.sendStatus(httpStatus.NOT_FOUND);
+            default:
+                return res.sendStatus(500);
+        }
+    }
+
+}
+
+export async function putBooking(req: AuthenticatedRequest, res: Response){
+    const { roomId } = req.body
+    const bookingId = Number(req.params.bookingId)
+    
+    console.log(roomId)
+    console.log(bookingId)
+
+    try {
+        const booking = await bookingService.bookingPut(roomId, bookingId)
+        return res.send({bookingId: booking.id});
+    }catch (error) {
         switch (error.name) {
             case "NotFoundError":
                 return res.sendStatus(httpStatus.NOT_FOUND);
