@@ -159,7 +159,7 @@ describe("PUT /booking/:bookingId", () => {
         const response = await server.put(`/booking/${bookingId}`).set("Authorization", `Bearer ${token}`).send({ roomId: otherRoom.id });
         expect(response.status).toBe(200);
         expect(response.body.bookingId).toEqual(bookingId)
-    })
+    });
 
     it("should respond with status 404 if roomId don't exist", async () => {
         const { token, enrollment, room } = await initRoom()
@@ -173,7 +173,7 @@ describe("PUT /booking/:bookingId", () => {
         const { bookingId } = booking.body
         const response = await server.put(`/booking/${bookingId}`).set("Authorization", `Bearer ${token}`).send({ roomId: (otherRoom.id + 1000) });
         expect(response.status).toBe(404);
-    })
+    });
 
     it("should respond with status 403 if roomId don't exist", async () => {
         const { token, enrollment, room } = await initRoom()
@@ -187,7 +187,14 @@ describe("PUT /booking/:bookingId", () => {
         const { bookingId } = booking.body
         const response = await server.put(`/booking/${bookingId}`).set("Authorization", `Bearer ${token}`).send({ roomId: otherRoom.id });
         expect(response.status).toBe(403);
-    })
+    });
 
+    it("should respond with status 403 if bookingId don't exist", async () => {
+        const { token, room } = await initRoom()
+        const otherRoom = await createRoomWithHotelId(room.hotelId)
+
+        const response = await server.put(`/booking/0`).set("Authorization", `Bearer ${token}`).send({ roomId: otherRoom.id });
+        expect(response.status).toBe(403);
+    });
 
 })
